@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:login_app/components/ui_components.dart';
 import 'package:login_app/screens/signup_screen.dart';
 import 'package:login_app/utils/auth.dart';
@@ -18,12 +19,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
-  late String _email;
-  late String _password;
   bool _saving = false;
-
   final _key = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _passwordControllrt = TextEditingController();
   static final auth = FirebaseAuth.instance;
   static late AuthStatus _status;
 
@@ -45,253 +44,223 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        backgroundColor: Colors.white,
-        body: LoadingOverlay(
-          isLoading: _saving,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  const TopScreenImage(screenImageName: 'welcome.jpg'),
-                  Expanded(
-                    flex: 2,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: LoadingOverlay(
+        isLoading: _saving,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const TopScreenImage(screenImageName: 'welcome.jpg'),
+                Expanded(
+                  flex: 2,
+                  child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          height: 30,
+                        ),
                         Form(
                           autovalidateMode: AutovalidateMode.always,
                           child: Column(
                             children: [
-                               CustomTextField(
-                              textField: TextField(
-                                  onChanged: (value) {
-                                    _email = value;
-                                  },
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  decoration: kTextInputDecoration.copyWith(
-                                      hintText: 'Email')),
-                            ),
-                            SizedBox(height: 10,),
-                            CustomTextField(
-                              textField: TextField(
-                                obscureText: true,
-                                onChanged: (value) {
-                                  _password = value;
-                                },
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                ),
-                                decoration: kTextInputDecoration.copyWith(
-                                    hintText: 'Password'),
+                              CustomTextfield(
+                                  controller: _emailController,
+                                  hintText: 'Email'),
+                              SizedBox(
+                                height: 10,
                               ),
-                            ),
-                            SizedBox(height: 20,),
-                            CustomBottomScreen(
-                                textButton: 'Login',
-                                heroTag: 'login_btn',
-                                question: 'Forgot password?',
-                                buttonPressed: () async {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  setState(() {
-                                    _saving = true;
-                                  });
-                                  try {
-                                    await _auth.signInWithEmailAndPassword(
-                                        email: _email, password: _password);
+                              CustomTextfield(
+                                  controller: _passwordControllrt,
+                                  hintText: 'Password'),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              CustomButton(
+                                  buttonText: 'Login',
+                                  onPressed: () async {
+                                    if (_emailController.text.isEmail == true &&
+                                        _passwordControllrt.text.length >= 6) {
+                                      try {
+                                        await _auth.signInWithEmailAndPassword(
+                                            email: _emailController.text,
+                                            password: _passwordControllrt.text);
 
-                                    if (context.mounted) {
-                                      setState(() {
-                                        _saving = false;
-                                        Navigator.popAndPushNamed(
-                                            context, LoginScreen.id);
-                                      });
-                                      Navigator.pushNamed(
-                                          context, DashboardScreen.id);
-                                    }
-                                  } catch (e) {
-                                    signUpAlert(
-                                      context: context,
-                                      onPressed: () {
-                                        setState(() {
-                                          _saving = false;
-                                        });
-                                        Navigator.popAndPushNamed(
-                                            context, LoginScreen.id);
-                                      },
-                                      title: 'WRONG PASSWORD OR EMAIL',
-                                      desc:
-                                      'Confirm your email and password and try again',
-                                      btnText: 'Try Now',
-                                    ).show();
-                                  }
-                                },
-                                questionPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text("RESET YOUR PASSWORD"),
-                                        content: SizedBox(
-                                          height: 300,
-                                          width: 300,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              TextFormField(
-                                                obscureText: false,
-                                                controller: _emailController,
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return 'Empty email';
-                                                  }
-                                                  return null;
-                                                },
-                                                autofocus: false,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                decoration: const InputDecoration(
-                                                  contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 20,
-                                                      horizontal: 20),
-                                                  border: OutlineInputBorder(
-                                                      borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              30.0))),
-                                                  enabledBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                      width: 1,
-                                                    ),
-                                                    borderRadius: BorderRadius.all(
-                                                      Radius.circular(
-                                                        30.0,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderSide:
-                                                    BorderSide(width: 2.0),
-                                                    borderRadius: BorderRadius.all(
-                                                      Radius.circular(
-                                                        30.0,
-                                                      ),
-                                                    ),
-                                                  ),
-
-                                                  isDense: true,
-                                                  // fillColor: kPrimaryColor,
-                                                  filled: true,
-                                                  errorStyle:
-                                                  TextStyle(fontSize: 15),
-                                                  hintText: 'email address',
-                                                  hintStyle: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: MediaQuery.of(context)
-                                                    .size
-                                                    .height /
-                                                    20,
-                                                child: Material(
-                                                  elevation: 2,
-                                                  borderRadius:
-                                                  BorderRadius.circular(20),
-                                                  child: MaterialButton(
-                                                    onPressed: () async {
-                                                      // if (_key.currentState
-                                                      //     !.validate()) {
-                                                      final _status =
-                                                      await resetPassword(
-                                                          email:
-                                                          _emailController
-                                                              .text
-                                                              .trim());
-                                                      if (_status ==
-                                                          AuthStatus.successful) {
-                                                        print("Email Sent Success");
-                                                        await FirebaseAuth
-                                                            .instance
-                                                            .sendPasswordResetEmail(
-                                                            email: _emailController.value.text);
-
-                                                      } else {
-                                                        //your logic or show snackBar with error message
-                                                        print("Email Sent Success");
-                                                      }
-                                                      // }
-                                                    },
-                                                    minWidth: double.infinity,
-                                                    child: const Text(
-                                                      'RECOVER PASSWORD',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                          FontWeight.bold,
-                                                          fontSize: 16,
-                                                          fontFamily: 'Poppins'),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        buttonPadding: EdgeInsets.all(19),
+                                        if (context.mounted) {
+                                          setState(() {
+                                            _saving = false;
+                                            Navigator.popAndPushNamed(
+                                                context, LoginScreen.id);
+                                          });
+                                          Navigator.pushNamed(
+                                              context, DashboardScreen.id);
+                                        }
+                                      } catch (e) {
+                                        final snackBar = SnackBar(
+                                          content:
+                                              Center(child: Text(e.toString())),
+                                          backgroundColor: Colors.red[400],
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      }
+                                    } else {
+                                      final snackBar = SnackBar(
+                                        content: Center(
+                                            child: const Text(
+                                                'Check Email/Password')),
+                                        backgroundColor: Colors.red[400],
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
                                       );
-                                    },
-                                  );
-                                }),
-                            SizedBox(height: 10,),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: CircleAvatar(
-                                    radius: 25,
-                                    child: Image.asset(
-                                        'assets/images/icons/facebook.png'),
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    }
+                                  }),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: CircleAvatar(
+                                      radius: 25,
+                                      child: Image.asset(
+                                          'assets/images/icons/facebook.png'),
+                                    ),
                                   ),
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: Colors.transparent,
-                                    child:
-                                    Image.asset('assets/images/icons/google.png'),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.transparent,
+                                      child: Image.asset(
+                                          'assets/images/icons/google.png'),
+                                    ),
                                   ),
-                                ),
-
-                              ],
-                            ),
-                            TextButton(onPressed: (){
-                              Navigator.popAndPushNamed(
-                                  context, SignUpScreen.id);
-                            }, child: Text('Dont\'t have an account? Register ',style: TextStyle(color: Colors.grey),))
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30)),
+                                          title: Text("Reset your password"),
+                                          content: SizedBox(
+                                            height: 200,
+                                            width: 300,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                CustomTextfield(
+                                                    controller:
+                                                        _emailController,
+                                                    hintText: 'Email'),
+                                                SizedBox(
+                                                  height: 30,
+                                                ),
+                                                CustomButton(
+                                                    buttonText: 'Send email',
+                                                    onPressed: () async {
+                                                      if (_emailController.text.isEmail == true){
+                                                        final _status = await resetPassword(email: _emailController.text.trim());
+                                                        if (_status == AuthStatus.successful) {
+                                                          final snackBar = SnackBar(
+                                                            content: Center(
+                                                                child: Text(
+                                                                    'Email sent to the email')),
+                                                            backgroundColor: Colors.red[400],
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                BorderRadius.circular(10)),
+                                                          );
+                                                          ScaffoldMessenger.of(context)
+                                                              .showSnackBar(snackBar);
+                                                          await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.value.text);
+                                                        } else {
+                                                          final snackBar = SnackBar(
+                                                            content: Center(
+                                                                child: const Text(
+                                                                    'Email Failed')),
+                                                            backgroundColor: Colors.red[400],
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                BorderRadius.circular(10)),
+                                                          );
+                                                          ScaffoldMessenger.of(context)
+                                                              .showSnackBar(snackBar);
+                                                        }
+                                                      }else{
+                                                        final snackBar = SnackBar(
+                                                          content: Center(
+                                                              child: const Text(
+                                                                  'Email format')),
+                                                          backgroundColor: Colors.red[400],
+                                                          shape: RoundedRectangleBorder(
+                                                              borderRadius:
+                                                              BorderRadius.circular(10)),
+                                                        );
+                                                        ScaffoldMessenger.of(context)
+                                                            .showSnackBar(snackBar);
+                                                      }
+                                                    }
+                                                    ),
+                                              ],
+                                            ),
+                                          ),
+                                          buttonPadding: EdgeInsets.all(19),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    'Forget Passwors?',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.popAndPushNamed(
+                                        context, SignUpScreen.id);
+                                  },
+                                  child: Text(
+                                    'Dont\'t have an account? Register ',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
                             ],
                           ),
                         )
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

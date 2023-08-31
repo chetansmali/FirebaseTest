@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
   static String id = 'order_screen';
+
 
   @override
   State<OrderPage> createState() => _OrderPageState();
 }
 
 class _OrderPageState extends State<OrderPage> {
+
+  FirebaseDatabase database = FirebaseDatabase.instance;
+  DatabaseReference ref = FirebaseDatabase.instance.ref("users/123");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
