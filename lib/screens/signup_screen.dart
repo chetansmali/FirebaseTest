@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late String _name;
   late String _password;
   late String _confirmPass;
+  final _signupFormKey = GlobalKey<FormState>();
   bool _saving = false;
   bool value = false;
 
@@ -42,138 +43,152 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.symmetric(
                         horizontal: 15,
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const ScreenTitle(title: 'Sign Up'),
-                          CustomTextField(
-                            textField: TextField(
-                              onChanged: (value) {
-                                _email = value;
-                              },
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                              decoration: kTextInputDecoration.copyWith(
-                                hintText: 'Email',
-                              ),
-                            ),
-                          ),
-                          CustomTextField(
-                            textField: TextField(
-                              onChanged: (value) {
-                                _name = value;
-                              },
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                              decoration: kTextInputDecoration.copyWith(
-                                hintText: 'Name',
-                              ),
-                            ),
-                          ),
-                          CustomTextField(
-                            textField: TextField(
-                              obscureText: true,
-                              onChanged: (value) {
-                                _password = value;
-                              },
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                              decoration: kTextInputDecoration.copyWith(
-                                hintText: 'Password',
-                              ),
-                            ),
-                          ),
-                          CustomTextField(
-                            textField: TextField(
-                              obscureText: true,
-                              onChanged: (value) {
-                                _confirmPass = value;
-                              },
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                              decoration: kTextInputDecoration.copyWith(
-                                hintText: 'Confirm Password',
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: _signupFormKey,
+                          autovalidateMode: AutovalidateMode.always,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Checkbox(
-                                  checkColor: Colors.white,
-                                  value: value,
-                                  onChanged: (bool? value) {
+                              const ScreenTitle(title: 'Sign Up'),
+                              SizedBox(height: 15,),
+
+                              CustomTextField(
+                                textField: TextField(
+                                  onChanged: (value) {
+                                    _email = value;
+                                  },
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  decoration: kTextInputDecoration.copyWith(
+                                    hintText: 'Email',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              CustomTextField(
+                                textField: TextField(
+                                  onChanged: (value) {
+                                    _name = value;
+                                  },
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  decoration: kTextInputDecoration.copyWith(
+                                    hintText: 'Name',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              CustomTextField(
+                                textField: TextField(
+                                  obscureText: true,
+                                  onChanged: (value) {
+                                    _password = value;
+                                  },
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  decoration: kTextInputDecoration.copyWith(
+                                    hintText: 'Password',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              CustomTextField(
+                                textField: TextField(
+                                  obscureText: true,
+                                  onChanged: (value) {
+                                    _confirmPass = value;
+                                  },
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  decoration: kTextInputDecoration.copyWith(
+                                    hintText: 'Confirm Password',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Checkbox(
+                                      checkColor: Colors.white,
+                                      value: value,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          this.value = value! ;
+                                        });
+                                      }),
+                                  Text('I agree term and condition'),
+                                ],
+                              ),
+                              SizedBox(height: 10,),
+                              CustomBottomScreen(
+                                textButton: 'Sign Up',
+                                heroTag: 'signup_btn',
+                                question: 'Have an account?',
+                                buttonPressed: () async {
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                     setState(() {
-                                      this.value = value! ;
+                                      _saving = true;
                                     });
-                                  }),
-                              Text('I agree term and condition'),
+                                    if (_confirmPass == _password && value == true) {
+                                      try {
+                                        await _auth.createUserWithEmailAndPassword(
+                                            email: _email, password: _password);
+                                        _auth.currentUser?.updateDisplayName(_name);
+
+                                        if (context.mounted) {
+                                          signUpAlert(
+                                            context: context,
+                                            title: 'Registered',
+                                            desc: 'Successfully registered',
+                                            btnText: 'Login Now',
+                                            onPressed: () {
+                                              setState(() {
+                                                _saving = false;
+                                                Navigator.popAndPushNamed(
+                                                    context, SignUpScreen.id);
+                                              });
+                                              Navigator.pushNamed(
+                                                  context, LoginScreen.id);
+                                            },
+                                          ).show();
+                                        }
+                                      } catch (e) {
+                                        signUpAlert(
+                                            context: context,
+                                            onPressed: () {
+                                              SystemNavigator.pop();
+                                            },
+                                            title: 'SOMETHING WRONG',
+                                            desc: 'Close the app and try again',
+                                            btnText: 'Close Now');
+                                      }
+                                    }
+                                    else {
+                                      showAlert(
+                                          context: context,
+                                          title: 'WRONG PASSWORD/Term & Condition',
+                                          desc:
+                                          'Make sure fill all fields',
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }).show();
+                                    }
+                                },
+                                questionPressed: () async {
+                                  Navigator.pushNamed(context, LoginScreen.id);
+                                },
+                              ),
+
                             ],
                           ),
-                          CustomBottomScreen(
-                            textButton: 'Sign Up',
-                            heroTag: 'signup_btn',
-                            question: 'Have an account?',
-                            buttonPressed: () async {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                              setState(() {
-                                _saving = true;
-                              });
-                              if (_confirmPass == _password && value == true) {
-                                try {
-                                  await _auth.createUserWithEmailAndPassword(
-                                      email: _email, password: _password);
-                                  _auth.currentUser?.updateDisplayName(_name);
-
-                                  if (context.mounted) {
-                                    signUpAlert(
-                                      context: context,
-                                      title: 'Registered',
-                                      desc: 'Successfully registered',
-                                      btnText: 'Login Now',
-                                      onPressed: () {
-                                        setState(() {
-                                          _saving = false;
-                                          Navigator.popAndPushNamed(
-                                              context, SignUpScreen.id);
-                                        });
-                                        Navigator.pushNamed(
-                                            context, LoginScreen.id);
-                                      },
-                                    ).show();
-                                  }
-                                } catch (e) {
-                                  signUpAlert(
-                                      context: context,
-                                      onPressed: () {
-                                        SystemNavigator.pop();
-                                      },
-                                      title: 'SOMETHING WRONG',
-                                      desc: 'Close the app and try again',
-                                      btnText: 'Close Now');
-                                }
-                              } else {
-                                showAlert(
-                                    context: context,
-                                    title: 'WRONG PASSWORD/Term & Condition',
-                                    desc:
-                                        'Make sure that you write the same password twice',
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    }).show();
-                              }
-                            },
-                            questionPressed: () async {
-                              Navigator.pushNamed(context, LoginScreen.id);
-                            },
-                          ),
-
-                        ],
+                        ),
                       ),
                     ),
                   ),
