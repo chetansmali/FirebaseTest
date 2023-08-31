@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login_app/screens/login_screen.dart';
+import 'package:login_app/screens/order_screen.dart';
+import 'package:login_app/screens/profile_screen.dart';
 import 'package:login_app/screens/signup_screen.dart';
 import 'package:login_app/screens/dashboard_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +30,9 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         SignUpScreen.id: (context) => SignUpScreen(),
         DashboardScreen.id: (context) => DashboardScreen(),
+        OrderPage.id: (context) => OrderPage(),
+        ProfilePage.id: (context) => ProfilePage(),
+
       },
     );
   }
