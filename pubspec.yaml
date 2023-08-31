@@ -41,6 +41,7 @@ dependencies:
   rflutter_alert: ^2.0.7
   get: ^4.6.5
   modern_form_line_awesome_icons: ^2.0.1
+  firebase_database: ^10.2.5
 
 dev_dependencies:
   flutter_test:

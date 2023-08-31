@@ -83,128 +83,36 @@ class ScreenTitle extends StatelessWidget {
   }
 }
 
-class CustomTextField extends StatelessWidget {
-  CustomTextField({super.key, required this.textField});
-  final TextField textField;
+class CustomTextfield extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+  final int maxLine;
+  const CustomTextfield({Key? key, required this.controller, required this.hintText,  this.maxLine=1}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 30,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(
-          width: 2.5,
-          color: kTextColor,
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        border: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black38,
+            )
+        ),
+        enabledBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black38,
+            )
         ),
       ),
-      child: textField,
+      validator: (val){
+        if(val == null || val.isEmpty){
+          return 'Enter your $hintText';
+        }
+        return null;
+      },
+      maxLines: maxLine,
     );
   }
-}
-
-class CustomBottomScreen extends StatelessWidget {
-  const CustomBottomScreen({
-    super.key,
-    required this.textButton,
-    required this.question,
-    this.heroTag = '',
-    required this.buttonPressed,
-    required this.questionPressed,
-  });
-  final String textButton;
-  final String question;
-  final String heroTag;
-  final Function buttonPressed;
-  final Function questionPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 30,
-            ),
-            child: GestureDetector(
-              onTap: () {
-                questionPressed();
-              },
-              child: Text(question),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Hero(
-            tag: heroTag,
-            child: CustomButton(
-              buttonText: textButton,
-              width: 150,
-              onPressed: () {
-                buttonPressed();
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-Alert signUpAlert({
-  required Function onPressed,
-  required String title,
-  required String desc,
-  required String btnText,
-  required BuildContext context,
-}) {
-  return Alert(
-    context: context,
-    title: title,
-    desc: desc,
-    buttons: [
-      DialogButton(
-        onPressed: () {
-          onPressed();
-        },
-        width: 120,
-        child: Text(
-          btnText,
-          style: const TextStyle(color: Colors.white, fontSize: 20),
-        ),
-      ),
-    ],
-  );
-}
-
-Alert showAlert({
-  required Function onPressed,
-  required String title,
-  required String desc,
-  required BuildContext context,
-}) {
-  return Alert(
-    context: context,
-    type: AlertType.error,
-    title: title,
-    desc: desc,
-    buttons: [
-      DialogButton(
-        onPressed: () {
-          onPressed();
-        },
-        width: 120,
-        child: const Text(
-          "OK",
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-      )
-    ],
-  );
 }

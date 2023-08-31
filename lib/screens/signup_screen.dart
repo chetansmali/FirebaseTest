@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:login_app/components/ui_components.dart';
 import 'package:login_app/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,10 +17,11 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _auth = FirebaseAuth.instance;
-  late String _email;
-  late String _name;
-  late String _password;
-  late String _confirmPass;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController= TextEditingController();
+  final TextEditingController _ConfirmController = TextEditingController();
+
   final _signupFormKey = GlobalKey<FormState>();
   bool _saving = false;
   bool value = false;
@@ -38,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   const TopScreenImage(screenImageName: 'welcome.png'),
                   Expanded(
-                    flex: 2,
+                    flex: 4,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 15,
@@ -54,63 +56,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               const ScreenTitle(title: 'Sign Up'),
                               SizedBox(height: 15,),
 
-                              CustomTextField(
-                                textField: TextField(
-                                  onChanged: (value) {
-                                    _email = value;
-                                  },
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  decoration: kTextInputDecoration.copyWith(
-                                    hintText: 'Email',
-                                  ),
-                                ),
-                              ),
+                              CustomTextfield(controller: _nameController, hintText: "Name"),
                               SizedBox(height: 10,),
-                              CustomTextField(
-                                textField: TextField(
-                                  onChanged: (value) {
-                                    _name = value;
-                                  },
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  decoration: kTextInputDecoration.copyWith(
-                                    hintText: 'Name',
-                                  ),
-                                ),
-                              ),
+                              CustomTextfield(controller: _emailController, hintText: 'Email'),
                               SizedBox(height: 10,),
-                              CustomTextField(
-                                textField: TextField(
-                                  obscureText: true,
-                                  onChanged: (value) {
-                                    _password = value;
-                                  },
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  decoration: kTextInputDecoration.copyWith(
-                                    hintText: 'Password',
-                                  ),
-                                ),
-                              ),
+                              CustomTextfield(controller: _passwordController, hintText: "Passwoord"),
                               SizedBox(height: 10,),
-                              CustomTextField(
-                                textField: TextField(
-                                  obscureText: true,
-                                  onChanged: (value) {
-                                    _confirmPass = value;
-                                  },
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                  decoration: kTextInputDecoration.copyWith(
-                                    hintText: 'Confirm Password',
-                                  ),
-                                ),
-                              ),
+                              CustomTextfield(controller: _ConfirmController, hintText: 'Confirm password'),
                               SizedBox(height: 10,),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -127,65 +79,85 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ],
                               ),
                               SizedBox(height: 10,),
-                              CustomBottomScreen(
-                                textButton: 'Sign Up',
-                                heroTag: 'signup_btn',
-                                question: 'Have an account?',
-                                buttonPressed: () async {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                    setState(() {
-                                      _saving = true;
-                                    });
-                                    if (_confirmPass == _password && value == true) {
-                                      try {
-                                        await _auth.createUserWithEmailAndPassword(
-                                            email: _email, password: _password);
-                                        _auth.currentUser?.updateDisplayName(_name);
+                              CustomButton(buttonText: 'Signup', onPressed: () async {
+                                if(value) {
+                                  if (_ConfirmController.text ==
+                                      _passwordController.text &&
+                                      _nameController.text.isNotEmpty &&
+                                      _emailController.text.isEmail) {
+                                    try {
+                                      await _auth
+                                          .createUserWithEmailAndPassword(
+                                          email: _emailController.text,
+                                          password: _passwordController.text);
+                                      _auth.currentUser?.updateDisplayName(
+                                          _nameController.text);
 
-                                        if (context.mounted) {
-                                          signUpAlert(
-                                            context: context,
-                                            title: 'Registered',
-                                            desc: 'Successfully registered',
-                                            btnText: 'Login Now',
-                                            onPressed: () {
-                                              setState(() {
-                                                _saving = false;
-                                                Navigator.popAndPushNamed(
-                                                    context, SignUpScreen.id);
-                                              });
-                                              Navigator.pushNamed(
-                                                  context, LoginScreen.id);
-                                            },
-                                          ).show();
-                                        }
-                                      } catch (e) {
-                                        signUpAlert(
-                                            context: context,
-                                            onPressed: () {
-                                              SystemNavigator.pop();
-                                            },
-                                            title: 'SOMETHING WRONG',
-                                            desc: 'Close the app and try again',
-                                            btnText: 'Close Now');
+                                      if (context.mounted) {
+                                          final snackBar = SnackBar(
+                                            content: Center(
+                                                child: const Text('Register successfully')),
+                                            backgroundColor: Colors.red[400],
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(10)),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                          Navigator.popAndPushNamed(context, LoginScreen.id);
                                       }
+                                    } catch (e) {
+                                        final snackBar = SnackBar(
+                                          content: Center(
+                                              child: Text(
+                                                  'Something went worong' + e.toString())),
+                                          backgroundColor: Colors.red[400],
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(10)),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
                                     }
-                                    else {
-                                      showAlert(
-                                          context: context,
-                                          title: 'WRONG PASSWORD/Term & Condition',
-                                          desc:
-                                          'Make sure fill all fields',
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          }).show();
-                                    }
-                                },
-                                questionPressed: () async {
-                                  Navigator.pushNamed(context, LoginScreen.id);
-                                },
-                              ),
-
+                                  }
+                                  else {
+                                    final snackBar = SnackBar(
+                                      content: Center(
+                                          child: const Text(
+                                              'Format mismatch(email/password)')),
+                                      backgroundColor: Colors.red[400],
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(10)),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                }
+                                else
+                                {
+                                  final snackBar = SnackBar(
+                                    content: Center(
+                                        child: const Text(
+                                            'Agress the condition')),
+                                    backgroundColor: Colors.red[400],
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(10)),
+                                  );
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                              }),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.popAndPushNamed(
+                                        context, LoginScreen.id);
+                                  },
+                                  child: Text(
+                                    'Have a account? Login ',
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
                             ],
                           ),
                         ),
