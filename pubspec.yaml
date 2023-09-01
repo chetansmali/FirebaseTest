@@ -42,6 +42,7 @@ dependencies:
   get: ^4.6.5
   modern_form_line_awesome_icons: ^2.0.1
   firebase_database: ^10.2.5
+  firebase_storage: ^11.2.6
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +71,7 @@ flutter:
     - assets/images/
     - assets/images/icons/facebook.png
     - assets/images/icons/google.png
-    - assets/images/icons/linkedin.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
