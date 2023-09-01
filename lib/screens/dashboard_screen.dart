@@ -45,20 +45,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              SizedBox(
-                width: 120,
-                height: 120,
-                child: FadeInImage(
-                  image: NetworkImage(
-                      "https://ik.imagekit.io/altajfood/ar_asset/5184638_2669812.jpg"),
-                  placeholder: const AssetImage("assets/images/welcome.png"),
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return Image.asset('assets/images/welcome.png',
-                        fit: BoxFit.fitWidth);
-                  },
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
               const SizedBox(height: 20),
                GridViewComponwnt(),
                SizedBox(height: 10,),
@@ -90,7 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       switch(_selectedIndex){
         case 0 :  Navigator.pushNamed(context, DashboardScreen.id);
                   break;
-        case 1 :  Navigator.pushNamed(context, OrderPage.id);
+        case 1 :  Navigator.pushNamed(context, Order_Page.id);
                   break;
         case 2 : Navigator.pushNamed(context, ProfilePage.id);
                   break;
