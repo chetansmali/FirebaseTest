@@ -25,15 +25,15 @@ class _Order_PageState extends State<Order_Page> {
             ),
           );
         },
-        child:
-            Icon(
-              Icons.add,
-              size: 28,
-            ),
+        child: Icon(
+                  Icons.add,
+                  size: 28,
+                ),
         elevation: 20,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
           'Order',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),
@@ -67,11 +67,11 @@ class _Order_PageState extends State<Order_Page> {
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  tileColor: Colors.grey[300],
+                  tileColor: Colors.black12,
                   trailing: IconButton(
                     icon: Icon(
                       Icons.delete,
-                      color: Colors.red[900],
+                      color: Colors.black45,
                       size: 30,
                     ),
                     onPressed: () {
@@ -81,8 +81,8 @@ class _Order_PageState extends State<Order_Page> {
                   title: Text(
                     Contact['name'],
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 25,
+                      color: Colors.blueAccent,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -90,7 +90,7 @@ class _Order_PageState extends State<Order_Page> {
                     Contact['number'],
                     style: TextStyle(
                       color: Colors.black54,
-                      fontSize: 20,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

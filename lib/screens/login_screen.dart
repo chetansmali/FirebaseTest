@@ -53,7 +53,12 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                const TopScreenImage(screenImageName: 'welcome.jpg'),
+                SizedBox(height: 90,),
+               Text("LOIGIN",style: TextStyle(
+                 fontWeight: FontWeight.bold,
+                 fontSize: 20,
+               ),),
+                SizedBox(height: 20,),
                 Expanded(
                   flex: 2,
                   child: SingleChildScrollView(

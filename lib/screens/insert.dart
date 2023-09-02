@@ -69,12 +69,7 @@ class AddPageState extends State<AddPage> {
         };
 
         dbRef!.push().set(items).whenComplete(() {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => Order_Page(),
-            ),
-          );
+          Navigator.pop(context);
         });
 
     } on Exception catch (e) {
