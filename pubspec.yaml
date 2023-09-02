@@ -43,6 +43,7 @@ dependencies:
   modern_form_line_awesome_icons: ^2.0.1
   firebase_database: ^10.2.5
   firebase_storage: ^11.2.6
+  animated_bottom_navigation_bar: ^1.2.0
 
 dev_dependencies:
   flutter_test:
